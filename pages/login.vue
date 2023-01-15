@@ -1,6 +1,8 @@
 <template>
   <div>
     <Navbar />
-    <Home />
+    <Login />
   </div>
 </template>
+
+<script></script>
