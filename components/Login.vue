@@ -1,9 +1,10 @@
 <template>
-  <div class="w-3/4 sm:1/2 lg:w-1/3 p-5 bg-slate-200 rounded-md mx-auto">
+  <div class="w-full pt-20 bg-white dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
     <div class="text-center text-3xl md:text-4xl font-bold">Login</div>
     <form @submit.prevent="handleSubmit">
       <div class="mb-5">
-        <label class="text-sm font-medium text-gray-900 dark:text-white"
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >NUSnet ID</label
         >
         <input
@@ -15,7 +16,7 @@
         />
       </div>
       <div class="mb-5">
-        <label class="text-sm font-medium text-gray-900 dark:text-white"
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >Password</label
         >
         <input
@@ -27,12 +28,13 @@
         />
       </div>
       <div>
-        <button type="submit" class="rounded-lg bg-customblue text-white p-2">
+        <button type="submit" class="w-full text-white bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           {{ loading ? "Loading..." : "Submit" }}
         </button>
       </div>
     </form>
   </div>
+</div>
 </template>
 
 <script>
