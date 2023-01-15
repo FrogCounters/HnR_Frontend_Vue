@@ -1,6 +1,6 @@
 <template>
   <div>
-    <canvas id="gc" width="200" height="200" class="border touch-none"></canvas>
+    <canvas id="gc" :width="width" :height="width" class="border touch-none"></canvas>
   </div>
 </template>
 
@@ -17,6 +17,9 @@ export default {
     nusnet: {
       required: true,
     },
+    width: {
+      default: 200,
+    }
   },
   data: function () {
     return {
@@ -24,8 +27,8 @@ export default {
       y: 0,
       dx: 0.1,
       dy: 0.1,
-      w: 0,
-      h: 0,
+      w: 200,
+      h: 200,
       px: 100,
       py: 200 - 30,
       pw: 40,
@@ -42,8 +45,6 @@ export default {
     let context = canvas.getContext("2d");
     this.canvas = canvas;
     this.context = context;
-    this.w = canvas.width;
-    this.h = canvas.height;
 
     // websocket
     let ws = this.ws;
@@ -189,16 +190,19 @@ export default {
       let canvas = this.canvas;
       let context = this.context;
 
+      // scale
+      let ratio = this.width / 200
+
       // clear all
       context.fillStyle = "white";
       context.fillRect(0, 0, canvas.width, canvas.height);
 
       // draw ball
       context.fillStyle = "black";
-      context.fillRect(this.x, this.y, this.ballDiameter, this.ballDiameter);
+      context.fillRect(this.x * ratio, this.y * ratio, this.ballDiameter * ratio, this.ballDiameter * ratio);
 
       // draw paddle
-      context.fillRect(this.px, this.py, this.pw, this.ph);
+      context.fillRect(this.px * ratio, this.py * ratio, this.pw * ratio, this.ph * ratio);
     },
     tick: function () {
       if (this.gameRunning) {

@@ -11,6 +11,7 @@
         :ws="ws"
         :starting="starting"
         :nusnet="nusnet"
+        :width="windowWidth"
         @status-change="handleStatusChange"
       />
       <div class="mt-2">
@@ -52,6 +53,7 @@ import { storeToRefs } from "pinia";
 import { SendRequest } from "../utils/connectApi";
 import { useAuthStore } from "~/store/auth";
 import { watchEffect } from "vue";
+import { WS_URL } from "../utils/config";
 
 export default {
   name: "GamePage",
@@ -79,12 +81,13 @@ export default {
       status: "Starting",
       nusnet: "",
       dining_hall_id: 1,
+      windowWidth: window.innerWidth,
     };
   },
   created: function () {
     let client_id = Math.floor(Math.random() * 1000);
     this.client_id = client_id;
-    this.ws = new WebSocket(`ws://172.31.47.150:3002/ws/${client_id}`);
+    this.ws = new WebSocket(`${WS_URL}${client_id}`);
     this.ws.addEventListener("message", this.listener);
 
     const store = useAuthStore();
@@ -131,7 +134,7 @@ export default {
             token: localStorage.getItem("authData"),
             nusnet: "",
             user_id: boob["user_id"],
-            dining_hall_id: 8,
+            dining_hall_id: localStorage.getItem("hall_id"),
             meal_type: 2,
           });
         });

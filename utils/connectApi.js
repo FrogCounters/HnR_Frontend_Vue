@@ -1,3 +1,5 @@
+import { API_URL } from "./config";
+
 export async function SendRequest(
   method = "POST",
   endpoint = "profile",
@@ -19,7 +21,7 @@ export async function SendRequest(
       body: JSON.stringify(text),
     };
   }
-  return fetch("http://172.31.47.150:3002/" + endpoint, dict).then((data) =>
+  return fetch(API_URL + endpoint, dict).then((data) =>
     data.json()
   );
 }
