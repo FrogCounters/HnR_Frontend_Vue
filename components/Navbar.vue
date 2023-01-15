@@ -8,22 +8,22 @@
     <div>
       <ol class="flex" v-if="auth">
         <li class="p-3">
-          <router-link class="hover:border-slate-200" to="/dashboard"
-            >Dashboard</router-link
-          >
+          <NuxtLink class="hover:border-slate-200" to="/dashboard"
+            >Dashboard
+          </NuxtLink>
         </li>
         <li class="p-3">
-          <router-link class="hover:border-slate-200" to="/game"
-            >Game</router-link
-          >
+          <NuxtLink class="hover:border-slate-200" to="/game">
+            Game
+          </NuxtLink>
         </li>
         <li class="p-3 cursor-pointer" @click="logout">Logout</li>
       </ol>
       <ol class="flex" v-else>
         <li class="p-3">
-          <router-link class="hover:border-slate-200" to="/login"
-            >Login</router-link
-          >
+          <NuxtLink class="hover:border-slate-200" to="/login">
+            Login
+          </NuxtLink>
         </li>
       </ol>
     </div>
