@@ -57,6 +57,7 @@ export default {
     // start game in 1s
     setTimeout(() => {
       this.start(this.starting)
+      this.$emit("status-change", "Playing!")
     }, 500);
   },
   methods: {
@@ -109,13 +110,22 @@ export default {
         this.lose()
       }
     },
+    win: function() {
+      this.gameRunning = true
+      this.$emit('status-change', "Win")
+    },
     lose: function() {
-      console.log("lose")
       this.gameRunning = false
+      let payload = {
+        'class': 'win',
+      }
+      this.ws.send(JSON.stringify({"type": "update", "message": JSON.stringify(payload)}))
+      this.$emit('status-change', "Lose")
     },
     opponent: function() {
       if (this.in && this.y < 0) {
         let payload = {
+          'class': 'ballUpdate',
           'x': this.x,
           'y': this.y,
           'dx': this.dx,
@@ -133,12 +143,17 @@ export default {
       this.in = false
     },
     recvUpdate: function(message) {
-      this.x = this.w - message['x']
-      this.dx = -message['dx']
-      this.y = -message['y']
-      this.dy = -message['dy']
-      this.in = true
-      this.lastTick = Date.now()
+      let c = message['class']
+      if (c == 'ballUpdate') {
+        this.x = this.w - message['x']
+        this.dx = -message['dx']
+        this.y = -message['y']
+        this.dy = -message['dy']
+        this.in = true
+        this.lastTick = Date.now()
+      } else if (c == 'win') {
+        this.win()
+      }
     },
     bounce: function(x, dx, max) {
       if (x < 0) { 
@@ -208,7 +223,8 @@ export default {
         this.recvUpdate(message)
       }
     }
-  }
+  },
+  emits: [ 'status-change' ],
 }
 </script>
 
