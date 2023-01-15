@@ -1,6 +1,5 @@
 <template>
   <div>
-    Pong
     <canvas id="gc" width="200" height="200" class="border touch-none"></canvas>
   </div>
 </template>
@@ -10,6 +9,9 @@ export default {
   name: 'Pong',
   props: {
     ws: {
+      required: true,
+    },
+    starting: {
       required: true,
     }
   },
@@ -52,18 +54,18 @@ export default {
     canvas.addEventListener("touchend", this.touchend);
     canvas.addEventListener("touchmove", this.touchmove);
 
+    // start game in 1s
+    setTimeout(() => {
+      this.start(this.starting)
+    }, 500);
   },
   methods: {
     start: function(start) {
       this.lastTick = Date.now()
       this.gameRunning = true
-      if (!start) {
+      if (start) {
       } else {
-        this.x = -10
-        this.y = -10
-        this.dx = 0
-        this.dy = 0
-        this.in = false
+        this.hideBall()
       }
     },
     update: function() {
@@ -113,7 +115,6 @@ export default {
     },
     opponent: function() {
       if (this.in && this.y < 0) {
-        this.in = false
         let payload = {
           'x': this.x,
           'y': this.y,
@@ -121,7 +122,23 @@ export default {
           'dy': this.dy,
         }
         this.ws.send(JSON.stringify({"type": "update", "message": JSON.stringify(payload)}))
+        this.hideBall()
       }
+    },
+    hideBall: function() {
+      this.x = -10
+      this.y = -10
+      this.dx = 0
+      this.dy = 0
+      this.in = false
+    },
+    recvUpdate: function(message) {
+      this.x = this.w - message['x']
+      this.dx = -message['dx']
+      this.y = -message['y']
+      this.dy = -message['dy']
+      this.in = true
+      this.lastTick = Date.now()
     },
     bounce: function(x, dx, max) {
       if (x < 0) { 
@@ -188,14 +205,7 @@ export default {
         this.start(message['start'])
       } else if (data['type'] == 'update') {
         let message = JSON.parse(data['message'])
-        console.log(message)
-        this.x = this.w - message['x']
-        this.dx = -message['dx']
-        this.y = -message['y']
-        this.dy = -message['dy']
-        this.in = true
-        this.lastTick = Date.now()
-        console.log("hey", this.x, this.dx, this.y, this.dy)
+        this.recvUpdate(message)
       }
     }
   }
