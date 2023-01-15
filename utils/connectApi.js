@@ -19,7 +19,7 @@ export async function SendRequest(
       body: JSON.stringify(text),
     };
   }
-  return fetch("https://hnr-backend.onrender.com/" + endpoint, dict).then(
-    (data) => data.json()
+  return fetch("http://172.31.47.150:3002/" + endpoint, dict).then((data) =>
+    data.json()
   );
 }

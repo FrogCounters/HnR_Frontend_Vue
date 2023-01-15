@@ -35,9 +35,7 @@ export default {
     const store = useAuthStore();
     const { auth, data } = storeToRefs(store);
     const { checkAuth } = store;
-
     watchEffect(() => checkAuth(auth));
-    console.log(data, "!!!");
     return {
       store,
       checkAuth,

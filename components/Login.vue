@@ -70,6 +70,10 @@ export default {
         window.localStorage.setItem("authData", data.token);
         SendRequest("POST", "profile", { token: data.token }).then((data) => {
           this.setData(data);
+          console.log("asd", data);
+          localStorage.setItem("nusnet", data.nusnet);
+          // localStorage.setItem("token", data.token);
+          localStorage.setItem("hall_id", data.hall_id);
         });
       });
       this.loading = false;

@@ -1,8 +1,18 @@
 <template>
   <div>
+    <div v-if="status === 'Win'">
+      <Congrats />
+    </div>
+    <div v-if="status === 'Lose'">
+      <Lose />
+    </div>
     <div v-if="connected" class="w-full flex flex-col items-center">
-      <Pong :ws="ws" :starting="starting" @status-change="handleStatusChange" />
-      <!-- <button @click="ready">Ready</button> -->
+      <Pong
+        :ws="ws"
+        :starting="starting"
+        :nusnet="nusnet"
+        @status-change="handleStatusChange"
+      />
       <div class="mt-2">
         Playing against <strong>#{{ oppo_id }}</strong>
       </div>
@@ -39,16 +49,21 @@
 
 <script>
 import { storeToRefs } from "pinia";
+import { SendRequest } from "../utils/connectApi";
 import { useAuthStore } from "~/store/auth";
+import { watchEffect } from "vue";
 
 export default {
   name: "GamePage",
 
   setup() {
     const store = useAuthStore();
-    const { data } = storeToRefs(store);
+    const { checkAuth } = store;
+    let o = storeToRefs(store);
+    watchEffect(() => checkAuth(o.auth));
+
     return {
-      data,
+      o,
     };
   },
 
@@ -62,13 +77,20 @@ export default {
       connected: false,
       starting: false,
       status: "Starting",
+      nusnet: "",
+      dining_hall_id: 1,
     };
   },
   created: function () {
     let client_id = Math.floor(Math.random() * 1000);
     this.client_id = client_id;
-    this.ws = new WebSocket(`ws://hnr-backend.onrender.com/ws/${client_id}`);
+    this.ws = new WebSocket(`ws://172.31.47.150:3002/ws/${client_id}`);
     this.ws.addEventListener("message", this.listener);
+
+    const store = useAuthStore();
+    let o = storeToRefs(store);
+    this.nusnet = localStorage.getItem("nusnet");
+    this.dining_hall_id = o.data.dining_hall_id;
   },
   methods: {
     connect: function () {
@@ -87,16 +109,40 @@ export default {
       if (data["type"] == "connect") {
         if (!this.connected) {
           let message = JSON.parse(data["message"]);
-          console.log(message);
           this.starting = message["start"];
           this.oppo_id = message["client_id"];
           this.connected = true;
         }
       }
     },
-    handleStatusChange: function (new_status) {
-      console.log("status change");
+    handleStatusChange: function (new_status, edata) {
       this.status = new_status;
+      console.log("asda", this.o);
+      if (this.status == "Lose") {
+        let nusnet = edata;
+        console.log("gq", nusnet);
+        SendRequest("POST", "userid", {
+          token: localStorage.getItem("authData"),
+          nusnet: nusnet,
+        }).then((boob) => {
+          console.log(boob);
+          console.log("ihi", boob["user_id"]);
+          SendRequest("POST", "transfer", {
+            token: localStorage.getItem("authData"),
+            nusnet: "",
+            user_id: boob["user_id"],
+            dining_hall_id: 8,
+            meal_type: 2,
+          });
+        });
+        /*
+        SendRequest("POST", "transfer", {
+          token: this.o.data.token,
+          user_id: user_id,
+          dining_hall_id: this.o.dining_hall_id,
+          meal_type: 2,
+        });*/
+      }
     },
   },
 };
