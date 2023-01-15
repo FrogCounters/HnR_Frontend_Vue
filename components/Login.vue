@@ -73,6 +73,7 @@ export default {
         });
       });
       this.loading = false;
+      this.$router.push({ name: "dashboard" });
     },
   },
 };

@@ -8,9 +8,9 @@
       <div class="text-base md:text-3xl text-center">
         <h3 class="font-bold mt-8">Credits</h3>
         <h4 class="font-normal mt-8">
-          Breakfast : {{ data?.meals[0].credit }}
+          Breakfast : {{ data && data.meals[0].credit }}
         </h4>
-        <h4 class="font-normal">Dinner : {{ data?.meals[1].credit }}</h4>
+        <h4 class="font-normal">Dinner : {{ data && data.meals[1].credit }}</h4>
       </div>
       <button
         class="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"

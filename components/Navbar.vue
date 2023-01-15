@@ -52,6 +52,7 @@ export default {
       this.setAuth(null);
       this.setData(null);
       window.localStorage.setItem("authData", "");
+      this.$router.push({ name: "index" });
     },
   },
 };
