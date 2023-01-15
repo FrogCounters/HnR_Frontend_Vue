@@ -110,6 +110,12 @@ export default {
       let tmp = this.bounce(this.x, this.dx, this.w);
       this.x = tmp[0];
       this.dx = tmp[1];
+
+      this.updateSpeed(dt)
+    },
+    updateSpeed: function(dt) {
+      this.dx += Math.sign(this.dx) * dt / 1000 * 0.001
+      this.dy += Math.sign(this.dy) * dt / 1000 * 0.001
     },
     scoring: function () {
       if (this.y >= this.h) {
@@ -237,8 +243,9 @@ export default {
     },
     touchmove: function (e) {
       let touch = e.touches[0];
+      let ratio = this.width / 200
       this.px = this.cap(
-        this.paddleStartX + (touch.clientX - this.touchStartX),
+        this.paddleStartX + (touch.clientX - this.touchStartX) / ratio,
         this.w - this.pw
       );
     },

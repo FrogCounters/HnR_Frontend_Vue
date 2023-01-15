@@ -9,8 +9,11 @@
           >
             <div class="mt-2 text-center sm:ml-4 sm:text-left">
               <h4 class="text-lg font-medium text-gray-800">Noooooooooo</h4>
-              <p class="mt-2 text-[15px] leading-relaxed text-gray-500">
-                You have lost the game and your dining credit is gone :D
+              <p v-if="meal_type === 0" class="mt-2 text-[15px] leading-relaxed text-gray-500">
+                You have lost the game, but no credits were lost.
+              </p>
+              <p v-else class="mt-2 text-[15px] leading-relaxed text-gray-500">
+                You have lost the game and your {{ meal_type == 1 ? "breakfast" : "dinner" }} credit is gone :D
               </p>
               <div class="items-center gap-2 mt-3 sm:flex">
                 <NuxtLink to="/">
@@ -28,3 +31,14 @@
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  name: "Lose",
+  props: {
+    meal_type: {
+      required: true,
+    }
+  }
+}
+</script>
