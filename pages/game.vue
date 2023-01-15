@@ -3,8 +3,12 @@
     <div v-if="connected" class="w-full flex flex-col items-center">
       <Pong :ws="ws" :starting="starting" @status-change="handleStatusChange" />
       <!-- <button @click="ready">Ready</button> -->
-      <div class="mt-2">Playing against <strong>#{{ oppo_id }}</strong></div>
-      <div class="mt-2">Status: <strong>{{ status }}</strong></div>
+      <div class="mt-2">
+        Playing against <strong>#{{ oppo_id }}</strong>
+      </div>
+      <div class="mt-2">
+        Status: <strong>{{ status }}</strong>
+      </div>
     </div>
     <div v-else class="p-8 mt-4">
       <div class="border w-24 p-4 text-2xl text-center mx-auto relative">
@@ -13,14 +17,19 @@
       </div>
       <div class="p-4 mt-2 text-center">
         <p>Challenge your friends to a game of <strong>Pong</strong>!</p>
-        <p>But be warned, the loser will transfer <strong>one dining credit</strong> to the winner.</p>
+        <p>
+          But be warned, the loser will transfer
+          <strong>one dining credit</strong> to the winner.
+        </p>
       </div>
       <div class="w-full flex flex-row justify-center mt-3">
         <div>
           <div>Opponent Id:</div>
           <div class="flex">
-            <input v-model="id" type="number" class="border px-2 py-1">
-            <button @click="connect" class="py-1 px-2 rounded border">Start!</button>
+            <input v-model="id" type="number" class="border px-2 py-1" />
+            <button @click="connect" class="py-1 px-2 rounded border">
+              Start!
+            </button>
           </div>
         </div>
       </div>
@@ -29,9 +38,21 @@
 </template>
 
 <script>
+import { storeToRefs } from "pinia";
+import { useAuthStore } from "~/store/auth";
+
 export default {
-  name: 'IndexPage',
-  data: function() {
+  name: "GamePage",
+
+  setup() {
+    const store = useAuthStore();
+    const { data } = storeToRefs(store);
+    return {
+      data,
+    };
+  },
+
+  data: function () {
     return {
       ws: null,
       render: false,
@@ -41,40 +62,42 @@ export default {
       connected: false,
       starting: false,
       status: "Starting",
-    }
+    };
   },
-  created: function() {
+  created: function () {
     let client_id = Math.floor(Math.random() * 1000);
-    this.client_id = client_id
-    this.ws = new WebSocket(`ws://localhost:8000/ws/${client_id}`)
-    this.ws.addEventListener('message', this.listener)
+    this.client_id = client_id;
+    this.ws = new WebSocket(`ws://hnr-backend.onrender.com/ws/${client_id}`);
+    this.ws.addEventListener("message", this.listener);
   },
   methods: {
-    connect: function() {
-      let ws = this.ws
-      ws.send(JSON.stringify({type: "connect", message: this.id}))
+    connect: function () {
+      let ws = this.ws;
+      ws.send(JSON.stringify({ type: "connect", message: this.id }));
     },
-    ready: function() {
-      if (!this.ws) { return }
-      let ws = this.ws
-      ws.send(JSON.stringify({type: "update", message: "{'class':'ready'}"}))
+    ready: function () {
+      if (!this.ws) {
+        return;
+      }
+      let ws = this.ws;
+      ws.send(JSON.stringify({ type: "update", message: "{'class':'ready'}" }));
     },
-    listener: function(e) {
-      let data = JSON.parse(e['data'])
-      if (data['type'] == 'connect') {
+    listener: function (e) {
+      let data = JSON.parse(e["data"]);
+      if (data["type"] == "connect") {
         if (!this.connected) {
-          let message = JSON.parse(data['message'])
-          console.log(message)
-          this.starting = message['start']
-          this.oppo_id = message['client_id']
-          this.connected = true
+          let message = JSON.parse(data["message"]);
+          console.log(message);
+          this.starting = message["start"];
+          this.oppo_id = message["client_id"];
+          this.connected = true;
         }
       }
     },
-    handleStatusChange: function(new_status) {
-      console.log("status change")
-      this.status = new_status
-    }
-  }
-}
+    handleStatusChange: function (new_status) {
+      console.log("status change");
+      this.status = new_status;
+    },
+  },
+};
 </script>
