@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="self" class="bg-white">
     <div v-if="status === 'Win'">
       <Congrats :meal_type="meal_type" />
     </div>
@@ -118,6 +118,10 @@ export default {
       this.meal_type = meal_type
       let ws = this.ws;
       ws.send(JSON.stringify({ type: "connect", message: this.id, meal_type: this.meal_type }));
+      this.fullscreen()
+    },
+    fullscreen: function() {
+      this.$refs.self.requestFullscreen()
     },
     ready: function () {
       if (!this.ws) {
