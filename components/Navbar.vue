@@ -21,6 +21,11 @@
       </ol>
       <ol class="flex" v-else>
         <li class="p-3">
+          <NuxtLink class="hover:border-slate-200" to="/game">
+            Game
+          </NuxtLink>
+        </li>
+        <li class="p-3">
           <NuxtLink class="hover:border-slate-200" to="/login">
             Login
           </NuxtLink>

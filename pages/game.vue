@@ -21,9 +21,13 @@
         Status: <strong>{{ status }}</strong>
       </div>
       <div class="mt-2">
-        <div v-if="meal_type===0">No stakes.</div>
-        <div v-else-if="meal_type===1">One <strong>breakfast</strong> credit on the line!</div>
-        <div v-else-if="meal_type===2">One <strong>dinner</strong> credit on the line!</div>
+        <div v-if="meal_type === 0">No stakes.</div>
+        <div v-else-if="meal_type === 1">
+          One <strong>breakfast</strong> credit on the line!
+        </div>
+        <div v-else-if="meal_type === 2">
+          One <strong>dinner</strong> credit on the line!
+        </div>
       </div>
     </div>
     <div v-else class="p-8 mt-4">
@@ -47,15 +51,33 @@
           <div class="flex flex-col">
             <input v-model="id" type="number" class="border px-2 py-1" />
             <div class="flex flex justify-center mt-2">
-              <button @click="connect(1)" class="py-1 px-2 rounded border">
+              <button
+                v-if="isAuth"
+                @click="connect(1)"
+                class="py-1 px-2 rounded border"
+              >
                 Breakfast
               </button>
-              <button @click="connect(2)" class="py-1 px-2 rounded border">
+              <button
+                v-if="isAuth"
+                @click="connect(2)"
+                class="py-1 px-2 rounded border"
+              >
                 Dinner
               </button>
-              <button @click="connect(0)" class="py-1 px-2 rounded border">
+              <button
+                @click="connect(0)"
+                class="py-1 px-2 rounded border flex-grow"
+              >
                 No bet
               </button>
+            </div>
+            <div class="flex flex justify-center mt-2">
+              <NuxtLink to="/" class="flex-grow"
+                ><button class="py-1 px-2 rounded border w-full">
+                  Go back
+                </button></NuxtLink
+              >
             </div>
           </div>
         </div>
@@ -79,7 +101,7 @@ export default {
     const store = useAuthStore();
     const { checkAuth } = store;
     let o = storeToRefs(store);
-    watchEffect(() => checkAuth(o.auth));
+    //watchEffect(() => checkAuth(o.auth));
 
     return {
       o,
@@ -100,6 +122,7 @@ export default {
       dining_hall_id: 1,
       windowWidth: window.innerWidth,
       meal_type: 0,
+      isAuth: localStorage.getItem("authData"),
     };
   },
   created: function () {
@@ -112,16 +135,31 @@ export default {
     let o = storeToRefs(store);
     this.nusnet = localStorage.getItem("nusnet");
     this.dining_hall_id = o.data.dining_hall_id;
+
+    console.log("isAuth", this.isAuth);
   },
   methods: {
     connect: function (meal_type) {
-      this.meal_type = meal_type
+      this.meal_type = meal_type;
       let ws = this.ws;
-      ws.send(JSON.stringify({ type: "connect", message: this.id, meal_type: this.meal_type }));
-      this.fullscreen()
+      ws.send(
+        JSON.stringify({
+          type: "connect",
+          message: this.id,
+          meal_type: this.meal_type,
+        })
+      );
+      //this.fullscreen()
     },
-    fullscreen: function() {
-      this.$refs.self.requestFullscreen()
+    fullscreen: function () {
+      let self = this.$refs.self;
+      if (self.requestFullScreen) {
+        self.requestFullscreen();
+      } else if (self.mozRequestFullScreen) {
+        self.mozRequestFullScreen();
+      } else if (self.webkitRequestFullScreen) {
+        self.webkitRequestFullScreen();
+      }
     },
     ready: function () {
       if (!this.ws) {
@@ -138,6 +176,7 @@ export default {
           this.starting = message["start"];
           this.oppo_id = message["client_id"];
           this.meal_type = message["meal_type"];
+          this.fullscreen();
           this.connected = true;
         }
       }
@@ -147,7 +186,9 @@ export default {
       console.log("asda", this.o);
       if (this.status == "Lose") {
         // early return if no stakes
-        if (this.meal_type == 0) { return }
+        if (this.meal_type == 0 || !this.isAuth) {
+          return;
+        }
 
         // perform transfer
         let nusnet = edata;
